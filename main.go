@@ -45,6 +45,7 @@ func main() {
 	router := gin.Default()
 	router.GET("/users", getUsers)
 	router.GET("/users/:id", getUser)
+	router.GET("/gooses", getGooses)
 	router.Run("localhost:8080")
 }
 
@@ -65,4 +66,8 @@ func getUser(c *gin.Context) {
 	
 	var userIndex = slices.IndexFunc(users, func(user user) bool { return user.Id == id })
 	c.IndentedJSON(http.StatusOK, users[userIndex])
+}
+
+func getGooses(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, gooses)
 }
