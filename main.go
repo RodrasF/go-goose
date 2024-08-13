@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"net/http"
 	"slices"
 	"strconv"
@@ -39,14 +40,16 @@ var users = []user{
 	{Id: 2, Username: "RocasPT", password: "sporting"},
 }
 
-var usergooses = []userGoose{}
+var userGooses = []userGoose{}
 
 func main() {
 	router := gin.Default()
 	router.GET("/users", getUsers)
 	router.GET("/users/:id", getUser)
 	router.GET("/gooses", getGooses)
+	router.GET("/catch-goose", catchGoose)
 	router.Run("localhost:8080")
+
 }
 
 // getUsers responds with the list of all users as JSON.
@@ -63,11 +66,20 @@ func getUser(c *gin.Context) {
 		c.IndentedJSON(http.StatusNotFound, nil)
 		return
 	}
-	
+
 	var userIndex = slices.IndexFunc(users, func(user user) bool { return user.Id == id })
 	c.IndentedJSON(http.StatusOK, users[userIndex])
 }
 
 func getGooses(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, gooses)
+}
+
+func catchGoose(c *gin.Context) {
+	userId := 1
+	randomGooseIndex := rand.Intn(len(gooses))
+	chosenGoose := gooses[randomGooseIndex]
+	userGoose := userGoose{userId, chosenGoose.Id}
+	userGooses = append(userGooses, userGoose)
+	c.IndentedJSON(http.StatusOK, chosenGoose)
 }
