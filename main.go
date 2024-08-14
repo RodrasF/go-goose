@@ -40,7 +40,7 @@ var users = []user{
 	{Id: 2, Username: "RocasPT", password: "sporting"},
 }
 
-var userGooses = []userGoose{}
+var userGooseAssociations = []userGoose{}
 
 func main() {
 	router := gin.Default()
@@ -48,6 +48,7 @@ func main() {
 	router.GET("/users/:id", getUser)
 	router.GET("/gooses", getGooses)
 	router.GET("/catch-goose", catchGoose)
+	router.GET("/users/:id/gooses", getUserGooses)
 	router.Run("localhost:8080")
 
 }
@@ -80,6 +81,45 @@ func catchGoose(c *gin.Context) {
 	randomGooseIndex := rand.Intn(len(gooses))
 	chosenGoose := gooses[randomGooseIndex]
 	userGoose := userGoose{userId, chosenGoose.Id}
-	userGooses = append(userGooses, userGoose)
+	userGooseAssociations = append(userGooseAssociations, userGoose)
 	c.IndentedJSON(http.StatusOK, chosenGoose)
+}
+
+func getUserGooses(c *gin.Context) {
+	stringId := c.Param("id")
+	userId, err := strconv.Atoi(stringId)
+
+	if err != nil {
+		fmt.Printf("%s not valid", stringId)
+		c.IndentedJSON(http.StatusNotFound, nil)
+		return
+	}
+
+	geeseAssociationsForUserId := filter(userGooseAssociations, func(gooseLink userGoose) bool {
+		return gooseLink.UserId == userId
+	})
+
+	var userGeese = transform(geeseAssociationsForUserId, func(link userGoose) goose {
+		gooseIndex := slices.IndexFunc(gooses, func(goose goose) bool { return link.GooseId == goose.Id })
+		return gooses[gooseIndex]
+	})
+	c.IndentedJSON(http.StatusOK, userGeese)
+}
+
+func transform[T, V any](slice []T, fn func(T) V) []V {
+	newSlice := []V{}
+	for i := 0; i < len(slice); i++ {
+		newSlice = append(newSlice, fn(slice[i]))
+	}
+	return newSlice
+}
+
+func filter[T any](slice []T, funFunction func(T) bool) []T {
+	newSlice := []T{}
+	for i := 0; i < len(slice); i++ {
+		if funFunction(slice[i]) {
+			newSlice = append(newSlice, slice[i])
+		}
+	}
+	return newSlice
 }
