@@ -45,11 +45,12 @@ var userGooseAssociations = []userGoose{}
 func main() {
 	router := gin.Default()
 	router.GET("/users", getUsers)
-	router.GET("/users/:id", getUser)
+	router.GET("/users/:userId", getUser)
 	router.GET("/gooses", getGooses)
 	router.GET("/catch-goose", catchGoose)
-	router.GET("/users/:id/gooses", getUserGooses)
-	router.GET("/gooses/:id", getGoose)
+	router.GET("/users/:userId/gooses", getUserGooses)
+	router.GET("/gooses/:gooseId", getGoose)
+	router.GET("/users/:userId/gooses/:gooseId")
 	router.Run("localhost:8080")
 
 }
@@ -60,7 +61,7 @@ func getUsers(c *gin.Context) {
 }
 
 func getUser(c *gin.Context) {
-	stringId := c.Param("id")
+	stringId := c.Param("userId")
 	id, err := strconv.Atoi(stringId)
 
 	if err != nil {
@@ -74,7 +75,7 @@ func getUser(c *gin.Context) {
 }
 
 func getGoose(c *gin.Context) {
-	stringId := c.Param("id")
+	stringId := c.Param("gooseId")
 	id, err := strconv.Atoi(stringId)
 
 	if err != nil {
@@ -82,12 +83,12 @@ func getGoose(c *gin.Context) {
 		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
-	var gooseIndex = slices.IndexFunc(gooses, func(goose goose) bool {return goose.Id == id})
-	if  gooseIndex == -1 {
+	var gooseIndex = slices.IndexFunc(gooses, func(goose goose) bool { return goose.Id == id })
+	if gooseIndex == -1 {
 		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
-	
+
 	c.IndentedJSON(http.StatusOK, gooses[gooseIndex])
 }
 
@@ -105,7 +106,7 @@ func catchGoose(c *gin.Context) {
 }
 
 func getUserGooses(c *gin.Context) {
-	stringId := c.Param("id")
+	stringId := c.Param("userId")
 	userId, err := strconv.Atoi(stringId)
 
 	if err != nil {
