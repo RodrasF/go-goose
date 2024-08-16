@@ -49,6 +49,7 @@ func main() {
 	router.GET("/gooses", getGooses)
 	router.GET("/catch-goose", catchGoose)
 	router.GET("/users/:id/gooses", getUserGooses)
+	router.GET("/gooses/:id", getGoose)
 	router.Run("localhost:8080")
 
 }
@@ -64,12 +65,30 @@ func getUser(c *gin.Context) {
 
 	if err != nil {
 		fmt.Printf("%s not valid", stringId)
-		c.IndentedJSON(http.StatusNotFound, nil)
+		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 
 	var userIndex = slices.IndexFunc(users, func(user user) bool { return user.Id == id })
 	c.IndentedJSON(http.StatusOK, users[userIndex])
+}
+
+func getGoose(c *gin.Context) {
+	stringId := c.Param("id")
+	id, err := strconv.Atoi(stringId)
+
+	if err != nil {
+		fmt.Printf("%s not valid", stringId)
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+	var gooseIndex = slices.IndexFunc(gooses, func(goose goose) bool {return goose.Id == id})
+	if  gooseIndex == -1 {
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+	
+	c.IndentedJSON(http.StatusOK, gooses[gooseIndex])
 }
 
 func getGooses(c *gin.Context) {
@@ -91,7 +110,7 @@ func getUserGooses(c *gin.Context) {
 
 	if err != nil {
 		fmt.Printf("%s not valid", stringId)
-		c.IndentedJSON(http.StatusNotFound, nil)
+		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 
