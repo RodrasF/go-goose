@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: http://localhost:8080/gooses/1
+  url: http://localhost:8080/gooses/:id
   body: none
   auth: none
+}
+
+params:path {
+  id: 
 }

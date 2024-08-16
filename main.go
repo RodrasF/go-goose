@@ -65,7 +65,7 @@ func getUser(c *gin.Context) {
 
 	if err != nil {
 		fmt.Printf("%s not valid", stringId)
-		c.IndentedJSON(http.StatusNotFound, nil)
+		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 
@@ -79,10 +79,15 @@ func getGoose(c *gin.Context) {
 
 	if err != nil {
 		fmt.Printf("%s not valid", stringId)
-		c.IndentedJSON(http.StatusNotFound, nil)
+		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 	var gooseIndex = slices.IndexFunc(gooses, func(goose goose) bool {return goose.Id == id})
+	if  gooseIndex == -1 {
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+	
 	c.IndentedJSON(http.StatusOK, gooses[gooseIndex])
 }
 
@@ -105,7 +110,7 @@ func getUserGooses(c *gin.Context) {
 
 	if err != nil {
 		fmt.Printf("%s not valid", stringId)
-		c.IndentedJSON(http.StatusNotFound, nil)
+		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 
