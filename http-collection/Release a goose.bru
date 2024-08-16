@@ -1,0 +1,16 @@
+meta {
+  name: Release a goose
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:8080/users/:userId/gooses/:associationId
+  body: none
+  auth: none
+}
+
+params:path {
+  associationId: 12604d20-45d0-4d03-baf5-8be438eb8dc3
+  userId: 1
+}
