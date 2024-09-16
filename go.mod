@@ -1,4 +1,4 @@
-module go-goose-api
+module go-goose
 
 go 1.22.6
 
